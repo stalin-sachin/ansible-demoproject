@@ -1,0 +1,11 @@
+---
+- name: "Playbook for copying a file to managed nodes"
+  hosts: all
+  become: true
+  tasks:
+    - name: "Copy a file"
+      copy:
+        src: /opt/ansible/index.html
+        dest: /home/ansadmin/dir01
+        mode: 0600
+        owner: stalin

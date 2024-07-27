@@ -1,0 +1,9 @@
+---
+- name: "Install Packages in Webservers"
+  hosts: webservers
+  become: true
+  tasks:
+    - name: "Install yum packages in webservers"
+      yum:
+        name: ['git', 'make', 'gcc', 'gzip', 'wget', 'telnet']
+        state: installed

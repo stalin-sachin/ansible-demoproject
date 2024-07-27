@@ -1,0 +1,9 @@
+---
+- name: "install java"
+  hosts: 172.31.14.189
+  become: true
+  tasks:
+    - name: "Install Java"
+      yum:
+        name: openjdk-11.0.24
+        state: installed

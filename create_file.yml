@@ -1,0 +1,10 @@
+---
+ - name: "Playbook for creating a file or directory"
+   hosts: all
+   become: true
+   tasks:
+     - name: "To create a file in managed nodes"
+       file:
+         path: /home/ansadmin/demofile.txt
+         state: touch
+

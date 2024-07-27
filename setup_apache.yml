@@ -1,0 +1,66 @@
+---
+- name: "This Playbook is for installing httpd/apache in all managed nodes"
+  hosts: all
+  become: true
+  tasks:
+    - name: "Install httpd"
+      yum:
+        name: httpd
+        state: installed
+      when: ansible_os_family == "RedHat"
+      notify: start_httpd
+
+    - name: "Install apache2"
+      apt:
+        name: apache2
+        state: present
+      when: ansible_os_family == "Debian"
+      notify: start_apache2
+        
+    - name: "copy index.html"
+      copy:
+        src: /opt/ansible/index.html
+        dest: /var/www/html/
+        mode: 0666
+
+    - name: "Ensure the default apache port is 8081 on RedHat"
+      lineinfile: 
+        path: /etc/httpd/conf/httpd.conf
+        regexp: '^Listen '
+        insertafter: '^#Listen ' 
+        line: Listen 8081
+      when: ansible_os_family == "RedHat"
+      notify: restart_httpd
+    
+    - name: "Ensure the default apache port is 8081 on Ubuntu"
+      lineinfile:
+        path: /etc/apache2/ports.conf
+        regexp: '^Listen '
+        insertafter: "# /etc/apache2/sites-enabled/000-default.conf"
+        line: Listen 8081
+      when: ansible_os_family == "Debian"
+      notify: restart_apache2
+        
+  handlers:
+    - name: start_httpd
+      service:
+        name: httpd
+        state: started
+    # when: ansible_os_family == "RedHat"
+
+    - name: start_apache2
+      service:
+        name: apache2
+        state: started
+    # when: ansible_os_family == "Debian"
+
+    - name: restart_httpd
+      service:
+        name: httpd
+        state: restarted
+
+    - name: restart_apache2
+      service:
+        name: apache2
+        state: restarted
+

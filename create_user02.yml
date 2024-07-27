@@ -1,0 +1,10 @@
+---
+- name: "This Playbook is for create a new user"
+  hosts: all
+  become: true
+  vars_files:
+    - users.txt
+  tasks:
+    - name: "Create user {{ user}}"
+      user: 
+        name: "{{ user }}"

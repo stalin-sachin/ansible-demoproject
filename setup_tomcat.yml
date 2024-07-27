@@ -1,0 +1,38 @@
+---
+- name: "Setup tomcat Services in all managed nodes"
+  hosts: all
+  become: true
+  tasks:
+    - name: "Install Java on RHEL and Amazon Linux"
+      yum:
+        name: java-1.8.0-openjdk
+        state: installed
+      when: ansible_os_family == "Redhat"
+
+    - name: "Install Java on Ubuntu"
+      apt:
+        name: default-jdk
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: "Install tomcat services"
+      get_url:
+        url: https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.26/bin/apache-tomcat-10.1.26.tar.gz
+        dest: /opt
+
+    - name: "Unzip apache packages"
+      unarchive:
+        src: /opt/apache-tomcat-10.1.26.tar.gz
+        dest: /opt
+        remote_src: yes
+
+    - name: "add execution permission for startup.sh file"
+      file:
+        path: /opt/apache-tomcat-10.1.26/bin/startup.sh
+        mode: 0777
+
+    - name: "Start Tomcat services"
+      shell: nohup ./startup.sh
+      args:
+        chdir: /opt/apache-tomcat-10.1.26/bin
+
